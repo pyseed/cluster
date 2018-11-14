@@ -31,6 +31,17 @@ class WhenDeployingANewServiceMasterSlave(base_case.ClusterTestCase):
         )
         self.cluster.wait_http_code(timeout=10)
 
+        # check that we pass in post_up.sh script
+        post_up_test_file = '/tmp/post_up_test.txt'
+        container = self.cluster.self.nodes['node2'].docker_cli.containers.get(
+            self.app.ct.anyblok)
+        assert container
+        # post_up.sh should have created the test file
+        res = container.exec_run('ls {}'.format(post_up_test_file))
+        assert res.output == post_up_test_file
+        # get rid of test file
+        container.exec_run('rm {}'.format(post_up_test_file))
+
     def a_key_must_be_in_the_kv_store(self):
         self.assert_key_exists(self.application.app_key)
 
