@@ -28,6 +28,7 @@ TEST = False
 log = logging.getLogger()
 BTRFSDRIVER = os.environ.get('BTRFSDRIVER', 'anybox/buttervolume:latest')
 POST_MIGRATE_SCRIPT_NAME = 'post_migrate.sh'
+POST_UP_SCRIPT_NAME = 'post_up.sh'
 
 
 def concat(l):
@@ -354,6 +355,18 @@ class Application(object):
                     script_path,
                     from_app.repo_url,
                     from_app.branch,
+                    self.repo_url,
+                    self.branch
+                ),
+                cwd=self.path
+            )
+
+    def run_post_up_script(self, from_app):
+        script_path = join(self.path, POST_UP_SCRIPT_NAME)
+        if exists(script_path):
+            do(
+                '{} -r {} -b {}'.format(
+                    script_path,
                     self.repo_url,
                     self.branch
                 ),
