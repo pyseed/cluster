@@ -806,6 +806,7 @@ def deploy(payload, myself, deploy_id):
             newapp.pull()
             newapp.build()
             newapp.up()
+            newapp.run_post_up_script()
             if newslave:
                 newapp.enable_replicate(
                     True, members[newslave]['ip'], from_compose=True
@@ -851,6 +852,7 @@ def deploy(payload, myself, deploy_id):
             for volume in common_volumes:
                 volume.restore()
             newapp.up()
+            newapp.run_post_up_script()
             if newslave:
                 newapp.enable_replicate(
                     True, members[newslave]['ip'], from_compose=True
@@ -886,6 +888,7 @@ def deploy(payload, myself, deploy_id):
                 for volume in common_volumes:
                     volume.restore()
             newapp.up()
+            newapp.run_post_up_script()
             if newslave:
                 newapp.enable_replicate(
                     True, members[newslave]['ip'], from_compose=True
