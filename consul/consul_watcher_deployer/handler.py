@@ -28,7 +28,7 @@ TEST = False
 log = logging.getLogger()
 BTRFSDRIVER = os.environ.get('BTRFSDRIVER', 'anybox/buttervolume:latest')
 POST_MIGRATE_SCRIPT_NAME = 'post_migrate.sh'
-POST_UP_SCRIPT_NAME = 'post_up.sh'
+UPDATE_SCRIPT_NAME = 'update.sh'
 
 
 def concat(l):
@@ -361,13 +361,10 @@ class Application(object):
                 cwd=self.path
             )
 
-    def run_post_up_script(self):
-        # TODO: a way of doing update for actions such as
-        # tag-qualif-image-and-deploy but not for every deploy
-        # as a service could be only moved in another pair node
-        # but no new upgrade required
+    def deploy_pre_up(self):
+        # TODO: operate update script only if asked for in payload
 
-        script_path = join(self.path, POST_UP_SCRIPT_NAME)
+        script_path = join(self.path, UPDATE_SCRIPT_NAME)
         if exists(script_path):
             # TODO: a snapshot to prevent any loss of data since last one
 
@@ -805,8 +802,8 @@ def deploy(payload, myself, deploy_id):
             newapp.check(newmaster)
             newapp.pull()
             newapp.build()
+            newapp.deploy_pre_up()
             newapp.up()
-            newapp.run_post_up_script()
             if newslave:
                 newapp.enable_replicate(
                     True, members[newslave]['ip'], from_compose=True
@@ -851,8 +848,8 @@ def deploy(payload, myself, deploy_id):
             ]
             for volume in common_volumes:
                 volume.restore()
+            newapp.deploy_pre_up()
             newapp.up()
-            newapp.run_post_up_script()
             if newslave:
                 newapp.enable_replicate(
                     True, members[newslave]['ip'], from_compose=True
@@ -887,8 +884,8 @@ def deploy(payload, myself, deploy_id):
                 ]
                 for volume in common_volumes:
                     volume.restore()
+            newapp.deploy_pre_up()
             newapp.up()
-            newapp.run_post_up_script()
             if newslave:
                 newapp.enable_replicate(
                     True, members[newslave]['ip'], from_compose=True
