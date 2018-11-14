@@ -361,9 +361,16 @@ class Application(object):
                 cwd=self.path
             )
 
-    def run_post_up_script(self, from_app):
+    def run_post_up_script(self):
+        # TODO: a way of doing update for actions such as
+        # tag-qualif-image-and-deploy but not for every deploy
+        # as a service could be only moved in another pair node
+        # but no new upgrade required
+
         script_path = join(self.path, POST_UP_SCRIPT_NAME)
         if exists(script_path):
+            # TODO: a snapshot to prevent any loss of data since last one
+
             do(
                 '{} -r {} -b {}'.format(
                     script_path,
