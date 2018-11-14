@@ -376,7 +376,6 @@ class Application(object):
                 ),
                 cwd=self.path
             )
-            )
 
     def up(self):
         if self.path and exists(self.path):
