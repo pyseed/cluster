@@ -12,7 +12,8 @@ class WhenDeployingANewServiceMasterSlave(base_case.ClusterTestCase):
     def given_a_cluster_without_test_service(self):
         self.application = cluster.Application(
             'https://github.com/mlfmonde/cluster_lab_test_service',
-            'master'
+            #'master'  # TODO reactive
+            'update_script'
         )
         self.cluster.cleanup_application(self.application)
         self.master = 'node1'
@@ -30,17 +31,6 @@ class WhenDeployingANewServiceMasterSlave(base_case.ClusterTestCase):
             self.master, self.app.ct.anyblok, '--wsgi-host 0.0.0.0', timeout=30
         )
         self.cluster.wait_http_code(timeout=10)
-
-        # check that we pass in post_up.sh script
-        post_up_test_file = '/tmp/post_up_test.txt'
-        container = self.cluster.self.nodes['node2'].docker_cli.containers.get(
-            self.app.ct.anyblok)
-        assert container
-        # post_up.sh should have created the test file
-        res = container.exec_run('ls {}'.format(post_up_test_file))
-        assert res.output == post_up_test_file
-        # get rid of test file
-        container.exec_run('rm {}'.format(post_up_test_file))
 
     def a_key_must_be_in_the_kv_store(self):
         self.assert_key_exists(self.application.app_key)
@@ -150,6 +140,18 @@ class WhenDeployingANewServiceMasterSlave(base_case.ClusterTestCase):
             [self.app.ct.anyblok, self.app.ct.dbserver, ],
             [self.master]
         )
+
+    def update_script_should_be_run(self):
+        # check that we pass in update.sh script
+        test_file = '/tmp/post_up_test.txt'
+        container = self.cluster.self.nodes['node2'].docker_cli.containers.get(
+            self.app.ct.anyblok)
+        assert container
+        # update.sh should have created the test file
+        res = container.exec_run('ls {}'.format(test_file))
+        assert res.output == test_file
+        # get rid of test file
+        container.exec_run('rm {}'.format(test_file))
 
     def cleanup_destroy_service(self):
         self.cluster.cleanup_application(self.application)
