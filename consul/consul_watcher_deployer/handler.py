@@ -369,7 +369,7 @@ class Application(object):
             # TODO: a snapshot to prevent any loss of data since last one
 
             do(
-                '{} -r {} -b {}'.format(
+                'sh {} -r {} -b {}'.format(
                     script_path,
                     self.repo_url,
                     self.branch
