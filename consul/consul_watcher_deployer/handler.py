@@ -366,10 +366,8 @@ class Application(object):
 
         script_path = join(self.path, UPDATE_SCRIPT_NAME)
         if exists(script_path):
-            # TODO: a snapshot to prevent any loss of data since last one
-
             do(
-                '{} -r {} -b {}'.format(
+                'sh {} -r {} -b {}'.format(
                     script_path,
                     self.repo_url,
                     self.branch
@@ -378,6 +376,7 @@ class Application(object):
             )
 
     def up(self):
+        print('********************************* UP', script_path)
         if self.path and exists(self.path):
             log.info("Starting %s", self.name)
             do('docker-compose -p "{}" up -d'

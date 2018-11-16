@@ -145,7 +145,7 @@ class WhenDeployingANewServiceMasterSlave(base_case.ClusterTestCase):
         # check that we pass in update.sh script
         test_file = '/tmp/post_up_test.txt'
         container = self.cluster.self.nodes['node2'].docker_cli.containers.get(
-            self.app.ct.anyblok)
+            self.app.ct.test)
         assert container
         # update.sh should have created the test file
         res = container.exec_run('ls {}'.format(test_file))
